@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск фильмов на КиноПоиске</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 800px;
+            margin: 0 auto;
+            padding-bottom: 1rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+        }
+
+        #search-input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-right: none;
+            border-radius: 4px 0 0 4px;
+            width: 500px;
+            ;
+        }
+
+        .button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background-color: #f44336;
+            color: #fff;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #d32f2f;
+        }
+
+        #search-button {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .long-button {
+            padding-left: 20px;
+            padding-right: 20px;
+            height: auto;
+            white-space: nowrap;
+        }
+
+        .favorite-button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background-color: #f44336;
+            color: #fff;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .film-card {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .film-card img {
+            width: 200px;
+            height: auto;
+            margin-right: 20px;
+        }
+
+        .film-info {
+            flex: 1;
+            min-width: calc(33.3333% - 20px);
+            margin-right: 20px;
+        }
+
+        .film-description {
+            flex-basis: 100%;
+        }
+
+        @media (max-width: 767px) {
+            main {
+                padding: 1rem;
+            }
+
+            #add-movie-form {
+                flex-direction: column;
+            }
+
+            #add-movie-form input {
+                margin-right: 0;
+                width: 100%;
+            }
+
+            #add-movie-form button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Поиск фильма на КиноПоиске</h1>
+    <div class="search-container">
+        <div class="search-box">
+            <input type="search" id="search-input" placeholder="Введите название фильма">
+            <button id="search-button" class="button">Поиск</button>
+        </div>
+        <button id="last-search-results" class="button long-button">Последний поиск</button>
+        <button id="show-favorites" class="button">Избранное</button>
+    </div>
+    <div id="search-results"></div>
+
+    <script>
+        const searchInput = document.getElementById("search-input");
+        const searchButton = document.getElementById("search-button");
+        const lastSearchResultsButton = document.getElementById("last-search-results");
+        const showFavoritesButton = document.getElementById("show-favorites");
+        const searchResults = document.getElementById("search-results");
+
+        function showFavorites() {
+            const favorites = getFavorites();
+            displaySearchResults(favorites, true);
+        }
+
+        function getFavorites() {
+            const favoritesJSON = localStorage.getItem("favorites");
+            return favoritesJSON ? JSON.parse(favoritesJSON) : [];
+        }
+
+        function setFavorites(favorites) {
+            localStorage.setItem("favorites", JSON.stringify(favorites));
+        }
+
+        function isFilmInFavorites(filmId) {
+            const favorites = getFavorites();
+            return favorites.some(favorite => favorite.filmId === filmId);
+        }
+
+        function addFilmToFavorites(film) {
+            const favorites = getFavorites();
+            favorites.push(film);
+            setFavorites(favorites);
+        }
+
+        function removeFilmFromFavorites(filmId) {
+            const favorites = getFavorites();
+            const updatedFavorites = favorites.filter(favorite => favorite.filmId !== filmId);
+            setFavorites(updatedFavorites);
+        }
+
+        function toggleFavorite(event) {
+            const filmId = parseInt(event.target.dataset.filmId, 10);
+            const filmCard = event.target.closest(".film-card");
+            const film = {
+                filmId,
+                nameRu: filmCard.querySelector("h2").textContent,
+                filmLength: filmCard.querySelector("p:nth-child(3)").textContent.split(" ")[1],
+                year: filmCard.querySelector("p:nth-child(4)").textContent.split(" ")[2],
+                rating: filmCard.querySelector("p:nth-child(5)").textContent.split(" ")[1],
+                genres: filmCard.querySelector("p:nth-child(6)").textContent.split(": ")[1],
+                posterUrl: filmCard.querySelector("img").src,
+                description: filmCard.querySelector(".film-description").textContent.split(": ")[1]
+            };
+
+            if (isFilmInFavorites(filmId)) {
+                removeFilmFromFavorites(filmId);
+                event.target.textContent = "Добавить в избранное";
+            } else {
+                addFilmToFavorites(film);
+                event.target.textContent = "Удалить из избранного";
+            }
+        }
+
+        async function performSearch() {
+            const query = searchInput.value.trim();
+
+            if (query.length === 0) {
+                searchResults.innerHTML = "";
+                return;
+            }
+
+            const response = await fetch(`https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword=${encodeURIComponent(query)}`, {
+                headers: {
+                    "accept": "application/json",
+                    "X-API-KEY": "643139e0-bf1b-4a93-b062-6391abe593ec"
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.films.length === 0) {
+                searchResults.innerHTML = "<p>Ничего не найдено</p>";
+                return;
+            }
+
+            localStorage.setItem("searchQuery", query);
+            localStorage.setItem("searchResults", JSON.stringify(data.films));
+
+            displaySearchResults(data.films);
+        }
+
+        searchButton.addEventListener("click", performSearch);
+        searchInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                performSearch();
+            }
+        });
+
+        showFavoritesButton.addEventListener("click", showFavorites);
+
+        function displaySearchResults(films, isFavorites = false) {
+            searchResults.innerHTML = films.map(film => {
+                const genres = isFavorites ? film.genres : film.genres.map(genre => genre.genre).join(", ");
+                return `
+                    <div class="film-card">
+                        <img src="${film.posterUrl ? film.posterUrl : 'https://via.placeholder.com/150'}" alt="${film.nameRu || film.nameEn}">
+                        <div class="film-info">
+                            <h2>${film.nameRu || film.nameEn}</h2>
+                            <p>Длительность: ${film.filmLength} мин.</p>
+                            <p>Год выпуска: ${film.year}</p>
+                            <p>Рейтинг: ${film.rating}</p>
+                            <p>Жанры: ${genres}</p>
+                            <p><a href="https://www.kinopoisk.ru/film/${film.filmId}">Страница на кинопоиске</a></p>
+                            <p><a href="https://www.sspoisk.ru/film/${film.filmId}">Смотреть бесплатно</a></p>
+                            <button data-film-id="${film.filmId}" class="favorite-button">${isFilmInFavorites(film.filmId) ? 'Удалить из избранного' : 'Добавить в избранное'}</button>
+                        </div>
+                        <p class="film-description">Краткое описание: ${film.description}</p>
+                    </div>
+                `;
+            }).join("");
+
+            searchResults.querySelectorAll(".favorite-button").forEach(button => button.addEventListener("click", toggleFavorite));
+        }
+
+        function init() {
+            const savedQuery = localStorage.getItem("searchQuery");
+            const savedResults = localStorage.getItem("searchResults");
+
+            if (savedQuery && savedResults) {
+                searchInput.value = savedQuery;
+                const films = JSON.parse(savedResults);
+                displaySearchResults(films);
+            }
+
+            searchButton.addEventListener("click", performSearch);
+            searchInput.addEventListener("keydown", (event) => {
+                if (event.key === "Enter") {
+                    performSearch();
+                }
+            });
+
+            lastSearchResultsButton.addEventListener("click", () => {
+                const films = JSON.parse(localStorage.getItem("searchResults"));
+                if (films) {
+                    displaySearchResults(films);
+                }
+            });
+
+            showFavoritesButton.addEventListener("click", showFavorites);
+        }
+
+        window.addEventListener("DOMContentLoaded", init);
+    </script>
+</body>
+
+</html>
