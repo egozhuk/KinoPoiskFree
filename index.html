@@ -208,25 +208,15 @@
         }
 
         function toggleFavorite(event) {
-            const filmId = parseInt(event.target.dataset.filmId, 10);
             const filmCard = event.target.closest(".film-card");
-            const film = {
-                filmId,
-                nameRu: filmCard.querySelector("h2").textContent,
-                filmLength: filmCard.querySelector("p:nth-child(3)").textContent.split(" ")[1],
-                year: filmCard.querySelector("p:nth-child(4)").textContent.split(" ")[2],
-                rating: filmCard.querySelector("p:nth-child(5)").textContent.split(" ")[1],
-                genres: filmCard.querySelector("p:nth-child(6)").textContent.split(": ")[1],
-                posterUrl: filmCard.querySelector("img").src,
-                description: filmCard.querySelector(".film-description").textContent.split(": ")[1]
-            };
+            const film = JSON.parse(filmCard.dataset.film);
 
-            if (isFilmInFavorites(filmId)) {
-                removeFilmFromFavorites(filmId);
-                event.target.textContent = "Добавить в избранное";
-            } else {
+            if (event.target.textContent === "Добавить в избранное") {
                 addFilmToFavorites(film);
                 event.target.textContent = "Удалить из избранного";
+            } else {
+                removeFilmFromFavorites(film.filmId);
+                event.target.textContent = "Добавить в избранное";
             }
         }
 
@@ -269,23 +259,24 @@
 
         function displaySearchResults(films, isFavorites = false) {
             searchResults.innerHTML = films.map(film => {
-                const genres = isFavorites ? film.genres : film.genres.map(genre => genre.genre).join(", ");
+                const genres = Array.isArray(film.genres) ? film.genres.map(genre => genre.genre).join(", ") : film.genres;
+                const filmData = JSON.stringify(film).replace(/"/g, '&quot;');
                 return `
-                    <div class="film-card">
-                        <img src="${film.posterUrl ? film.posterUrl : 'https://via.placeholder.com/150'}" alt="${film.nameRu || film.nameEn}">
-                        <div class="film-info">
-                            <h2>${film.nameRu || film.nameEn}</h2>
-                            <p>Длительность: ${film.filmLength} мин.</p>
-                            <p>Год выпуска: ${film.year}</p>
-                            <p>Рейтинг: ${film.rating}</p>
-                            <p>Жанры: ${genres}</p>
-                            <p><a href="https://www.kinopoisk.ru/film/${film.filmId}">Страница на кинопоиске</a></p>
-                            <p><a href="https://www.sspoisk.ru/film/${film.filmId}">Смотреть бесплатно</a></p>
-                            <button data-film-id="${film.filmId}" class="favorite-button">${isFilmInFavorites(film.filmId) ? 'Удалить из избранного' : 'Добавить в избранное'}</button>
-                        </div>
-                        <p class="film-description">Краткое описание: ${film.description}</p>
-                    </div>
-                `;
+            <div class="film-card" data-film="${filmData}">
+                <img src="${film.posterUrl ? film.posterUrl : 'https://via.placeholder.com/150'}" alt="${film.nameRu || film.nameEn}">
+                <div class="film-info">
+                    <h2>${film.nameRu || film.nameEn}</h2>
+                    <p>Длительность: ${film.filmLength}</p>
+                    <p>Год выпуска: ${film.year}</p>
+                    <p>Рейтинг: ${film.rating}</p>
+                    <p>Жанры: ${genres}</p>
+                    <p><a href="https://www.kinopoisk.ru/film/${film.filmId}">Страница на кинопоиске</a></p>
+                    <p><a href="https://www.sspoisk.ru/film/${film.filmId}">Смотреть бесплатно</a></p>
+                    <button data-film-id="${film.filmId}" class="favorite-button">${isFilmInFavorites(film.filmId) ? 'Удалить из избранного' : 'Добавить в избранное'}</button>
+                </div>
+                <p class="film-description">Краткое описание: ${film.description}</p>
+            </div>
+        `;
             }).join("");
 
             searchResults.querySelectorAll(".favorite-button").forEach(button => button.addEventListener("click", toggleFavorite));
