@@ -126,6 +126,22 @@
             margin-bottom: 20px;
         }
 
+        .red-button {
+            display: inline-block;
+            background-color: #f44336;
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .red-button:hover {
+            background-color: #f44336;
+            color: white;
+            text-decoration: none;
+        }
+
         @media (min-width: 768px) {
             .search-container {
                 flex-direction: row;
@@ -262,21 +278,21 @@
                 const genres = Array.isArray(film.genres) ? film.genres.map(genre => genre.genre).join(", ") : film.genres;
                 const filmData = JSON.stringify(film).replace(/"/g, '&quot;');
                 return `
-            <div class="film-card" data-film="${filmData}">
-                <img src="${film.posterUrl ? film.posterUrl : 'https://via.placeholder.com/150'}" alt="${film.nameRu || film.nameEn}">
-                <div class="film-info">
-                    <h2>${film.nameRu || film.nameEn}</h2>
-                    <p>Длительность: ${film.filmLength}</p>
-                    <p>Год выпуска: ${film.year}</p>
-                    <p>Рейтинг: ${film.rating}</p>
-                    <p>Жанры: ${genres}</p>
-                    <p><a href="https://www.kinopoisk.ru/film/${film.filmId}">Страница на кинопоиске</a></p>
-                    <p><a href="https://www.sspoisk.ru/film/${film.filmId}">Смотреть бесплатно</a></p>
-                    <button data-film-id="${film.filmId}" class="favorite-button">${isFilmInFavorites(film.filmId) ? 'Удалить из избранного' : 'Добавить в избранное'}</button>
-                </div>
-                <p class="film-description">Краткое описание: ${film.description}</p>
-            </div>
-        `;
+                    <div class="film-card" data-film="${filmData}">
+                        <img src="${film.posterUrl ? film.posterUrl : 'https://via.placeholder.com/150'}" alt="${film.nameRu || film.nameEn}">
+                        <div class="film-info">
+                            <h2>${film.nameRu || film.nameEn}</h2>
+                            <p>Длительность: ${film.filmLength}</p>
+                            <p>Год выпуска: ${film.year}</p>
+                            <p>Рейтинг: ${film.rating}</p>
+                            <p>Жанры: ${genres}</p>
+                            <p><a class="red-button" href="https://www.kinopoisk.ru/film/${film.filmId}">Страница на кинопоиске</a></p>
+                            <p><a class="red-button" href="https://www.sspoisk.ru/film/${film.filmId}">Смотреть бесплатно</a></p>
+                            <button data-film-id="${film.filmId}" class="favorite-button">${isFilmInFavorites(film.filmId) ? 'Удалить из избранного' : 'Добавить в избранное'}</button>
+                        </div>
+                        <p class="film-description">Краткое описание: ${film.description}</p>
+                    </div>
+                `;
             }).join("");
 
             searchResults.querySelectorAll(".favorite-button").forEach(button => button.addEventListener("click", toggleFavorite));
