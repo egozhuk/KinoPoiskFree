@@ -1,6 +1,6 @@
 {
-    "name": "КиноПоиск PWA",
-    "short_name": "КиноПоиск",
+    "name": "КиноПоиск free",
+    "short_name": "Filmify",
     "description": "Поиск фильма на КиноПоиске",
     "start_url": "/",
     "display": "standalone",
@@ -8,8 +8,8 @@
     "theme_color": "#f44336",
     "icons": [
         {
-            "src": "path/to/icon-192x192.png",
-            "sizes": "192x192",
+            "src": "icon.png",
+            "sizes": "512x512",
             "type": "image/png"
         }
     ]
