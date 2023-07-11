@@ -1,0 +1,16 @@
+{
+    "name": "КиноПоиск PWA",
+    "short_name": "КиноПоиск",
+    "description": "Поиск фильма на КиноПоиске",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f5f5f5",
+    "theme_color": "#f44336",
+    "icons": [
+        {
+            "src": "path/to/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        }
+    ]
+}
