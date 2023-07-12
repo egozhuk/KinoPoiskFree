@@ -193,6 +193,8 @@
         const searchResults = document.getElementById("search-results");
 
         function showFavorites() {
+            showFavoritesButton.style.backgroundColor = '#8b0000';
+            lastSearchResultsButton.style.backgroundColor = '#f44336';
             const favorites = getFavorites();
             displaySearchResults(favorites, true);
         }
@@ -302,6 +304,8 @@
             const savedQuery = localStorage.getItem("searchQuery");
             const savedResults = localStorage.getItem("searchResults");
 
+            lastSearchResultsButton.style.backgroundColor = '#8b0000';
+
             if (savedQuery && savedResults) {
                 searchInput.value = savedQuery;
                 const films = JSON.parse(savedResults);
@@ -316,6 +320,8 @@
             });
 
             lastSearchResultsButton.addEventListener("click", () => {
+                lastSearchResultsButton.style.backgroundColor = '#8b0000';
+                showFavoritesButton.style.backgroundColor = '#f44336';
                 const films = JSON.parse(localStorage.getItem("searchResults"));
                 if (films) {
                     displaySearchResults(films);
