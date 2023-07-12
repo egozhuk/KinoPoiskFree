@@ -239,6 +239,8 @@
         }
 
         async function performSearch() {
+            lastSearchResultsButton.style.backgroundColor = '#8b0000';
+            showFavoritesButton.style.backgroundColor = '#f44336';
             const query = searchInput.value.trim();
 
             if (query.length === 0) {
