@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аккаунт</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#f44336">
+    <style>
+        .api-key-textbox {
+            width: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Аккаунт</h1>
+    <p>Ваш ключ:</p>
+    <div class="api-key-box">
+        <input type="api-key" id="api-key-input" class="api-key-textbox" placeholder="Введите ключ вашего аккаунта">
+        <button id="save-button" class="button">Сохранить</button>
+    </div>
+    <button id="menu-button" class="button">Главное меню</button>
+
+    <script>
+        const saveApiKeyButton = document.getElementById("save-button");
+        const apiKeyInput = document.getElementById("api-key-input");
+        const mainMenuButton = document.getElementById("menu-button");
+
+        saveApiKeyButton.addEventListener("click", (event) => {
+            const apiKey = apiKeyInput.value.trim();
+            localStorage.setItem("apiKey", apiKey);
+        });
+
+        mainMenuButton.addEventListener("click", (event) => {
+            window.location.href = `./index.html`;
+        })
+
+        const apiKeyCheck = localStorage.getItem("apiKey").trim();
+        if (apiKeyCheck.length > 2) {
+            apiKeyInput.value = apiKeyCheck;
+        }
+
+    </script>
+</body>
+
+</html>

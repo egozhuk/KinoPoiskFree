@@ -2,7 +2,7 @@
     "name": "КиноПоиск free",
     "short_name": "Filmify",
     "description": "Поиск фильма на КиноПоиске",
-    "start_url": "/",
+    "start_url": "/index.html",
     "display": "standalone",
     "background_color": "#f5f5f5",
     "theme_color": "#f44336",
