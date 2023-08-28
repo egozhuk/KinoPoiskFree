@@ -261,6 +261,19 @@
                 }
             });
 
+            if (!response.ok) {
+                if (apiKey === "") {
+                    alert('Введите ключ аккаунта на странице аккаунт. \n Если у вас нет ключа: инструкции для получения также есть на той странице.');
+                    return;
+                }
+                if (response.status === 401 || response.status === 403) {
+                    alert('Ключ аккаунта не найден.');
+                } else {
+                    alert('Произошла ошибка при выполнении запроса');
+                }
+                return;
+            }
+
             const data = await response.json();
 
             if (data.films.length === 0) {
