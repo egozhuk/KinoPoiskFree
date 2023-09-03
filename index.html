@@ -91,6 +91,17 @@
             transition: background-color 0.3s ease;
         }
 
+        .watch-no-add-button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background-color: #f44336;
+            color: #fff;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
         .film-card {
             display: flex;
             flex-direction: column;
@@ -175,6 +186,7 @@
     </div>
     <div id="search-results"></div>
 
+    <script src="getVideo.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker
@@ -301,8 +313,11 @@
             window.location.href = `./account.html`;
         });
 
+        var mfilmId = "";
+
         function displaySearchResults(films, isFavorites = false) {
             searchResults.innerHTML = films.map(film => {
+                mfilmId = film.filmId;
                 const genres = Array.isArray(film.genres) ? film.genres.map(genre => genre.genre).join(", ") : film.genres;
                 const filmData = JSON.stringify(film).replace(/"/g, '&quot;');
                 return `
@@ -316,6 +331,7 @@
                             <p>Жанры: ${genres}</p>
                             <p><a class="red-button" href="https://www.kinopoisk.ru/film/${film.filmId}">Страница на кинопоиске</a></p>
                             <p><a class="red-button" href="https://www.sspoisk.ru/film/${film.filmId}">Смотреть бесплатно</a></p>
+                            <button class="watch-no-add-button">Смотреть без рекламы(тест)</button>
                             <button data-film-id="${film.filmId}" class="favorite-button">${isFilmInFavorites(film.filmId) ? 'Удалить из избранного' : 'Добавить в избранное'}</button>
                         </div>
                         <p class="film-description">Краткое описание: ${film.description}</p>
@@ -324,6 +340,9 @@
             }).join("");
 
             searchResults.querySelectorAll(".favorite-button").forEach(button => button.addEventListener("click", toggleFavorite));
+            searchResults.querySelectorAll(".watch-no-add-button").forEach(button => button.addEventListener("click", () => {
+                automateBrowserActions(`https://www.flicksbar.club.ru/film/${mfilmId}`);
+            }));
         }
 
         function init() {
