@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 async function automateBrowserActions(url) {
     const browser = await puppeteer.launch();
@@ -30,4 +30,4 @@ async function automateBrowserActions(url) {
     window.open("https://m3u8play.dev/?url=" + encodeURIComponent(videoSrcs));
 }
 
-automateBrowserActions("https://flicksbar.club/film/251733");
+// automateBrowserActions("https://flicksbar.club/film/251733");
