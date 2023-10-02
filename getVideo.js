@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer';
+const puppeteer = require('puppeteer');
 
 async function automateBrowserActions(url) {
     const browser = await puppeteer.launch();
