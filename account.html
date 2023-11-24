@@ -85,12 +85,27 @@
         <input type="api-key" id="api-key-input" class="api-key-textbox" placeholder="Введите ключ вашего аккаунта">
         <button id="save-button" class="button">Сохранить</button>
     </div>
+    <button id="update-button" class="button">Обновить приложение</button>
     <button id="menu-button" class="button">Главное меню</button>
 
     <script>
         const saveApiKeyButton = document.getElementById("save-button");
         const apiKeyInput = document.getElementById("api-key-input");
         const mainMenuButton = document.getElementById("menu-button");
+
+        document.getElementById('update-button').addEventListener('click', function() {
+            navigator.serviceWorker.getRegistration().then(function(registration) {
+                if (registration) {
+                    registration.update();
+                }
+            });
+        });
+
+        navigator.serviceWorker.addEventListener('controllerchange', function() {
+            if (this.controller && this.controller.state === 'activated') {
+                window.location.reload();
+            }
+        });
 
         saveApiKeyButton.addEventListener("click", (event) => {
             const apiKey = apiKeyInput.value.trim();

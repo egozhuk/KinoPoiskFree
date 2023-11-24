@@ -35,3 +35,7 @@ self.addEventListener('fetch', (event) => {
         })
     );
 });
+
+self.addEventListener('install', function(event) {
+    event.waitUntil(self.skipWaiting()); // Пропустить ожидание
+});
