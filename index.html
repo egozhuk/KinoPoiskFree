@@ -199,6 +199,9 @@
                 });
         }
 
+        var link = ""
+        var keys = []
+
         const apiKey = localStorage.getItem("apiKey")
 
         const searchInput = document.getElementById("search-input");
@@ -316,28 +319,33 @@
         var mfilmId = "";
 
         function displaySearchResults(films, isFavorites = false) {
-            searchResults.innerHTML = films.map(film => {
+            films.forEach(async film => {
                 mfilmId = film.filmId;
                 const genres = Array.isArray(film.genres) ? film.genres.map(genre => genre.genre).join(", ") : film.genres;
                 const filmData = JSON.stringify(film).replace(/"/g, '&quot;');
-                return `
-                    <div class="film-card" data-film="${filmData}">
-                        <img src="${film.posterUrl ? film.posterUrl : 'https://via.placeholder.com/150'}" alt="${film.nameRu || film.nameEn}">
-                        <div class="film-info">
-                            <h2>${film.nameRu || film.nameEn}</h2>
-                            <p>Длительность: ${film.filmLength}</p>
-                            <p>Год выпуска: ${film.year}</p>
-                            <p>Рейтинг: ${film.rating}</p>
-                            <p>Жанры: ${genres}</p>
-                            <p><a class="red-button" href="https://www.kinopoisk.ru/film/${film.filmId}">Страница на кинопоиске</a></p>
-                            <p><a class="red-button" href="https://www.kinopoisk.vip/film/${film.filmId}">Смотреть бесплатно</a></p>
-                            <button class="watch-no-add-button">Смотреть без рекламы(тест)</button>
-                            <button data-film-id="${film.filmId}" class="favorite-button">${isFilmInFavorites(film.filmId) ? 'Удалить из избранного' : 'Добавить в избранное'}</button>
-                        </div>
-                        <p class="film-description">Краткое описание: ${film.description}</p>
+                // const m3u8Links = await getFullHtmlWithFrames("https://www.kinopoisk.gg/film/" + film.filmId);
+                // const link = m3u8Links[0];
+                // console.log(link);
+                const filmCard = document.createElement('div');
+                filmCard.classList.add('film-card');
+                filmCard.setAttribute('data-film', filmData);
+                filmCard.innerHTML = `
+                    <img src="${film.posterUrl ? film.posterUrl : 'https://via.placeholder.com/150'}" alt="${film.nameRu || film.nameEn}">
+                    <div class="film-info">
+                        <h2>${film.nameRu || film.nameEn}</h2>
+                        <p>Длительность: ${film.filmLength}</p>
+                        <p>Год выпуска: ${film.year}</p>
+                        <p>Рейтинг: ${film.rating}</p>
+                        <p>Жанры: ${genres}</p>
+                        <p><a class="red-button" href="https://www.kinopoisk.ru/film/${film.filmId}">Страница на кинопоиске</a></p>
+                        <p><a class="red-button" href="https://www.kinopoisk.gg/film/${film.filmId}">Смотреть бесплатно</a></p>
+                        <p><a class="red-button" href="${link}">Смотреть без рекламы(в разработке)</a></p>
+                        <button data-film-id="${film.filmId}" class="favorite-button">${isFilmInFavorites(film.filmId) ? 'Удалить из избранного' : 'Добавить в избранное'}</button>
                     </div>
+                    <p class="film-description">Краткое описание: ${film.description}</p>
                 `;
-            }).join("");
+                searchResults.appendChild(filmCard);
+            });
 
             searchResults.querySelectorAll(".favorite-button").forEach(button => button.addEventListener("click", toggleFavorite));
             searchResults.querySelectorAll(".watch-no-add-button").forEach(button => button.addEventListener("click", () => {
@@ -378,7 +386,6 @@
 
         window.addEventListener("DOMContentLoaded", init);
     </script>
-    <script defer src="/_vercel/insights/script.js"></script>
 </body>
 
 </html>

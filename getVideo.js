@@ -1,33 +1,36 @@
-const puppeteer = require('puppeteer');
+const { chromium } = require('playwright');
 
-async function automateBrowserActions(url) {
-    const browser = await puppeteer.launch();
+async function getFullHtmlWithFrames(url) {
+    const browser = await chromium.launch();
     const page = await browser.newPage();
+    await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 });
 
-    await page.goto(url);
+    const frames = page.frames();
+    let fullHtml = await page.content();
 
-    await page.waitForSelector('.kinobox__menuItem:nth-child(3)');
+    for (const frame of frames) {
+        const frameHtml = await frame.content();
+        fullHtml = fullHtml.replace('</body>', `${frameHtml}</body>`);
+    }
 
-    await page.click('.kinobox__menuItem:nth-child(3)');
-
-    let frames = await page.frames();
-
-    for (let i = frames.length - 1; i >= 0; i--) {
-        const frame = frames[i];
-        try {
-            await frame.waitForSelector('video', { timeout: 10000 });
-
-            let videoSrcs = await frame.$$eval('video', videos => videos.map(video => video.src));
-            console.log(`Video srcs in frame: ${videoSrcs}`);
-            console.log("https://m3u8play.dev/?url=" + encodeURIComponent(videoSrcs));
-            break;
-        } catch (error) {
-            console.log('Video not found in this frame within 10 seconds, moving to the next one.');
-        }
+    const regex = /https?:\/\/[^\s"]+\.m3u8/g;
+    const matches = fullHtml.match(regex);
+    const m3u8Links = [];
+    if (matches) {
+        matches.forEach(match => {
+            if (match.endsWith("/master.m3u8")) {
+                m3u8Links.push(match);
+            }
+        });
     }
 
     await browser.close();
-    window.open("https://m3u8play.dev/?url=" + encodeURIComponent(videoSrcs));
+
+    return m3u8Links;
 }
 
-// automateBrowserActions("https://flicksbar.club/film/251733");
+
+(async () => {
+    const m3u8Links = await getFullHtmlWithFrames("https://www.kinopoisk.gg/film/435/");
+    console.log(m3u8Links);
+})();
