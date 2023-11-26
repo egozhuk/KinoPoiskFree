@@ -1,7 +1,7 @@
-const { chromium } = require('playwright');
+import { playwright } from '@pipedream/browsers';
 
 async function getFullHtmlWithFrames(url) {
-    const browser = await chromium.launch();
+    const browser = await playwright.launch();
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 });
 
