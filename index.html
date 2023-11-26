@@ -323,9 +323,9 @@
                 mfilmId = film.filmId;
                 const genres = Array.isArray(film.genres) ? film.genres.map(genre => genre.genre).join(", ") : film.genres;
                 const filmData = JSON.stringify(film).replace(/"/g, '&quot;');
-                // const m3u8Links = await getFullHtmlWithFrames("https://www.kinopoisk.gg/film/" + film.filmId);
-                // const link = m3u8Links[0];
-                // console.log(link);
+                const m3u8Links = await getFullHtmlWithFrames("https://www.kinopoisk.gg/film/" + film.filmId);
+                const link = m3u8Links[0];
+                console.log(link);
                 const filmCard = document.createElement('div');
                 filmCard.classList.add('film-card');
                 filmCard.setAttribute('data-film', filmData);
