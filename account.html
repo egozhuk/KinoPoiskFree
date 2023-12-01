@@ -82,9 +82,6 @@
 <body>
     <h1>Аккаунт</h1>
     <p>Для работы сайта, вам нужно ввести ключ от аккаунта.</p>
-    <p>Сейчас ваша цена до конца текущего месяца: <span id="price-placeholder"></span> руб.</p>
-    <p>Ваше сообщение к платежу: ваша почта или ник в телеграмме. Если ее не укажите не сможете получить ключ.</p>
-    <a href="https://www.tinkoff.ru/cf/8n5jpLmrCEz">Оплатить</a>
     <p>Введите ключ:</p>
     <div class="api-key-box">
         <input type="api-key" id="api-key-input" class="api-key-textbox" placeholder="Введите ключ вашего аккаунта">
@@ -97,10 +94,6 @@
         const saveApiKeyButton = document.getElementById("save-button");
         const apiKeyInput = document.getElementById("api-key-input");
         const mainMenuButton = document.getElementById("menu-button");
-        const currentDate = new Date();
-        const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-        const daysLeft = lastDayOfMonth.getDate() - currentDate.getDate();
-        const price = daysLeft * 3.19;
 
         document.getElementById('price-placeholder').innerText = Math.floor(price);
 
