@@ -324,9 +324,6 @@
                 mfilmId = film.filmId;
                 const genres = Array.isArray(film.genres) ? film.genres.map(genre => genre.genre).join(", ") : film.genres;
                 const filmData = JSON.stringify(film).replace(/"/g, '&quot;');
-                // const m3u8Links = await getFullHtmlWithFrames("https://www.kinopoisk.gg/film/" + film.filmId);
-                // const link = m3u8Links[0];
-                // console.log(link);
                 const filmCard = document.createElement('div');
                 filmCard.classList.add('film-card');
                 filmCard.setAttribute('data-film', filmData);
@@ -338,6 +335,7 @@
                         <p>Год выпуска: ${film.year}</p>
                         <p>Рейтинг: ${film.rating}</p>
                         <p>Жанры: ${genres}</p>
+                        <p>ID for bot: ${film.filmId}</p>
                         <p><a class="red-button" href="https://www.kinopoisk.ru/film/${film.filmId}">Страница на кинопоиске</a></p>
                         <p><a class="red-button" href="https://www.kinopoisk.vip/film/${film.filmId}">Смотреть бесплатно</a></p>
                         <p><a class="red-button" href="">Смотреть без рекламы(в разработке)</a></p>
