@@ -301,6 +301,7 @@
             localStorage.setItem("searchResults", JSON.stringify(data.films));
 
             displaySearchResults(data.films);
+            window.location.reload();
         }
 
         searchButton.addEventListener("click", performSearch);
